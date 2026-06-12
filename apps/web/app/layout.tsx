@@ -6,10 +6,11 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GeistSans } from 'geist/font';
 import { Toaster } from 'sonner';
 import { formatRootUrl } from '@/lib/utils';
+import { PRODUCT } from '@/lib/product-copy';
 
 export const metadata: Metadata = {
-  title: 'Feedbase',
-  description: 'Collect feedback & communicate product updates with ease.',
+  title: PRODUCT.name,
+  description: PRODUCT.tagline,
   metadataBase: new URL(formatRootUrl()),
   openGraph: {
     images: [

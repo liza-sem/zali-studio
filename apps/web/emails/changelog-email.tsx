@@ -15,6 +15,7 @@ import {
   Tailwind,
 } from '@react-email/components';
 import { formatRootUrl } from '@/lib/utils';
+import { PRODUCT } from '@/lib/product-copy';
 
 interface ChangelogEmailProps {
   subId: string;
@@ -118,14 +119,14 @@ export default function ChangelogEmail({ subId, projectSlug, changelog }: Change
 
             <div className='flex w-full flex-row items-center justify-center'>
               <Link
-                href='https://feedbase.app'
+                href={formatRootUrl()}
                 className='flex items-center gap-2 text-sm font-normal text-black/70'>
                 <Img
-                  src='https://feedbase.app/icon-512x512.png'
-                  alt='Feedbase'
+                  src={`${formatRootUrl()}/icon-512x512.png`}
+                  alt={PRODUCT.name}
                   className='h-8 w-8 rounded-md'
                 />
-                Powered by Feedbase
+                Powered by {PRODUCT.name}
               </Link>
             </div>
           </Container>

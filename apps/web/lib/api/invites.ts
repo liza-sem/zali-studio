@@ -1,5 +1,6 @@
 import { sendEmail } from '@/emails';
 import ProjectInviteEmail from '@/emails/project-invite';
+import { PRODUCT } from '@/lib/product-copy';
 import { withProjectAuth, withUserAuth } from '../auth';
 import { ExtendedInviteProps, ProfileProps, ProjectInviteProps } from '../types';
 import { formatRootUrl } from '../utils';
@@ -132,7 +133,7 @@ export const createProjectInvite = (slug: string, cType: 'server' | 'route', ema
 
     // Send email to user
     const { error: emailError } = await sendEmail({
-      subject: `You've been invited to join ${project!.name} on Feedbase`,
+      subject: `You've been invited to join ${project!.name} on ${PRODUCT.name}`,
       email,
       react: ProjectInviteEmail({
         email,

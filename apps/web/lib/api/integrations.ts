@@ -1,3 +1,4 @@
+import { PRODUCT } from '@/lib/product-copy';
 import { FeedbackWithUserProps, ProjectConfigWithoutSecretProps, ProjectProps } from '../types';
 import { formatHtmlToMd, formatRootUrl } from '../utils';
 
@@ -45,7 +46,7 @@ export const sendDiscordNotification = async (
             icon_url: feedback.user.avatar_url,
           },
           footer: {
-            text: 'Powered By Feedbase',
+            text: `Powered by ${PRODUCT.name}`,
             icon_url: 'https://feedbase.app/icon-512x512.png',
           },
         },
@@ -70,7 +71,7 @@ export const sendDiscordConfirmation = async (
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      username: `Feedbase | Feedback`,
+      username: `${PRODUCT.name} | Requests`,
       avatar_url: 'https://feedbase.app/icon-512x512.png',
       content: roleId ? `<@&${roleId}>` : '',
       embeds: [
@@ -124,7 +125,7 @@ export const sendSlackNotification = async (
           ],
           author_name: feedback.user.full_name,
           author_icon: feedback.user.avatar_url,
-          footer: 'Powered By Feedbase',
+          footer: `Powered by ${PRODUCT.name}`,
           footer_icon: 'https://feedbase.app/icon-512x512.png',
           ts: Math.floor(Date.now() / 1000),
         },
@@ -148,7 +149,7 @@ export const sendSlackConfirmation = async (projectSlug: string, webhook: string
           text: "If you're seeing this, it means that your Slack integration is working correctly.",
           color: '#05060a',
           title_link: formatRootUrl('dash', `/${projectSlug}`),
-          footer: 'Powered By Feedbase',
+          footer: `Powered by ${PRODUCT.name}`,
           footer_icon: 'https://feedbase.app/icon-512x512.png',
           ts: Math.floor(Date.now() / 1000),
         },

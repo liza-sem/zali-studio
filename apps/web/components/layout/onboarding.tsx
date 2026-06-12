@@ -81,7 +81,7 @@ export default function Onboarding() {
 
               <Input
                 id='name'
-                placeholder='Feedbase'
+                placeholder='Acme Co'
                 value={name}
                 onChange={(event) => {
                   setName(event.target.value);

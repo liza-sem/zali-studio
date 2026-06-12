@@ -82,7 +82,7 @@ export default function AddProjectDialog({ trigger }: { trigger: React.ReactNode
 
             <Input
               id='name'
-              placeholder='Feedbase'
+              placeholder='Acme Co'
               value={name}
               onChange={(event) => {
                 setName(event.target.value);

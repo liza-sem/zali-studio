@@ -1,6 +1,7 @@
-/** User-facing product language for Zali Studio (client/agency hub). */
+/** User-facing product language (hosted at projects.lizasem.com). */
 export const PRODUCT = {
-  name: 'Zali Studio',
+  name: 'Projects',
+  domain: 'projects.lizasem.com',
   tagline: 'Requests, timeline, and brand updates for client work.',
   requests: {
     singular: 'Request',

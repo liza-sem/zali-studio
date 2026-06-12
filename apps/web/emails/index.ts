@@ -1,5 +1,8 @@
 import { JSXElementConstructor, ReactElement } from 'react';
 import { Resend } from 'resend';
+import { PRODUCT } from '@/lib/product-copy';
+
+const defaultFrom = `Projects <noreply@${PRODUCT.domain}>`;
 
 export const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
@@ -23,7 +26,7 @@ export const sendEmail = async ({
     );
   }
   return resend.emails.send({
-    from: marketing ? 'Christo from Feedbase <christo@feedbase.app>' : 'Feedbase <system@feedbase.app>',
+    from: defaultFrom,
     to: test ? 'delivered@resend.dev' : email,
     subject,
     react,
@@ -62,7 +65,7 @@ export const sendBatchEmails = async ({
 
   return resend.batch.create(
     emails.map((email) => ({
-      from: marketing ? 'Christo from Feedbase <christo@feedbase.app>' : 'Feedbase <system@feedbase.app>',
+      from: defaultFrom,
       to: test ? 'delivered@resend.dev' : email,
       subject,
       headers: headers ? headers[emails.indexOf(email)] : undefined,

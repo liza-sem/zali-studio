@@ -4,9 +4,9 @@
     "display": "standalone",
     "scope": "/",
     "start_url": "/",
-    "name": "Feedbase",
-    "short_name": "Feedbase",
-    "description": "The open-source solution for collecting feedback & communicating product updates.",
+    "name": "Projects",
+    "short_name": "Projects",
+    "description": "Requests, timeline, and brand updates for client work.",
     "icons": [
       {
         "src": "/icon-192x192.png",

@@ -1,4 +1,4 @@
--- Zali Studio: request fields + brand update linkage
+-- Projects (projects.lizasem.com): request fields + brand update linkage
 
 ALTER TABLE public.feedback
   ADD COLUMN IF NOT EXISTS pinned_url text,

@@ -1,6 +1,6 @@
-# Zali Studio
+# Projects
 
-Client-oriented hub forked from [Feedbase](https://github.com/liza-sem/feedbase).
+Client-oriented hub at **[projects.lizasem.com](https://projects.lizasem.com)** — forked from [Feedbase](https://github.com/liza-sem/feedbase).
 
 **One project = one client.** Each hub has three surfaces:
 
@@ -9,6 +9,15 @@ Client-oriented hub forked from [Feedbase](https://github.com/liza-sem/feedbase)
 | **Requests** | Clients submit work with pinned links, files, priority, and deadline |
 | **Timeline** | Agency tracks scoped → in progress → review → done |
 | **Brand updates** | Polished changelog-style updates for the client |
+
+## URLs
+
+| Surface | URL |
+|---------|-----|
+| Dashboard | `https://dash.projects.lizasem.com` |
+| Client hub | `https://{client-slug}.projects.lizasem.com` |
+
+Set `NEXT_PUBLIC_ROOT_DOMAIN=projects.lizasem.com` in production.
 
 ## Features (v0)
 
@@ -20,7 +29,7 @@ Client-oriented hub forked from [Feedbase](https://github.com/liza-sem/feedbase)
 
 ## Stack
 
-Same as Feedbase: Next.js, Supabase, Turborepo, Dokploy/GHCR deploy.
+Next.js, Supabase, Turborepo, Dokploy/GHCR deploy.
 
 ## Database
 
@@ -35,6 +44,12 @@ pnpm install
 cd apps/web && pnpm dev
 ```
 
+Use `dash.localhost:3000` for the dashboard and `{slug}.localhost:3000` for client hubs locally.
+
 ## Deploy
 
-Separate Dokploy app + Supabase project recommended (do not share production Zali public hub DB).
+Use a **separate** Dokploy app and Supabase project from the public Zali hub. Point DNS:
+
+- `projects.lizasem.com` → app (marketing / redirect)
+- `dash.projects.lizasem.com` → app (dashboard)
+- `*.projects.lizasem.com` → app (per-client hubs)

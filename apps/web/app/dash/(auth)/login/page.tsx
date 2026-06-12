@@ -6,9 +6,11 @@ import { createServerClient } from '@supabase/ssr';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from 'ui/components/ui/card';
 import { UserAuthForm } from '@/components/user-auth-form';
 
+import { PRODUCT } from '@/lib/product-copy';
+
 export const metadata: Metadata = {
-  title: 'Sign in to Feedbase',
-  description: 'Sign in to your Feedbase account.',
+  title: `Sign in to ${PRODUCT.name}`,
+  description: `Sign in to your ${PRODUCT.name} account.`,
 };
 
 export default async function SignIn() {
