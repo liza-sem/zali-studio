@@ -37,24 +37,5 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Deploy to Dokploy
-        env:
-          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
-          DOKPLOY_APPLICATION_ID: sOjKAmUXQJTazD78fkIdi
-        run: |
-          response=$(curl -sS -w "\n%{http_code}" -X POST "https://my.lizasem.xyz/api/application.deploy" \
-            -H "x-api-key: ${DOKPLOY_API_KEY}" \
-            -H "Content-Type: application/json" \
-            -d "{\"applicationId\":\"${DOKPLOY_APPLICATION_ID}\",\"title\":\"CI deploy ${GITHUB_SHA:0:7}\"}")
-          body="${response%$'\n'*}"
-          status="${response##*$'\n'}"
-          echo "$body"
-          if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
-            echo "Dokploy deploy failed with HTTP $status"
-            exit 1
-          fi
+  # Dokploy builds from git on the VPS; CI only publishes the GHCR image.
+  # Re-enable this job after GHCR package is public or registry PAT has read:packages.
