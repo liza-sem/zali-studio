@@ -45,7 +45,7 @@ jobs:
       - name: Deploy to Dokploy
         env:
           DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
-          DOKPLOY_APPLICATION_ID: mPTK-UCmbr0M2kwaJU0TU
+          DOKPLOY_APPLICATION_ID: sOjKAmUXQJTazD78fkIdi
         run: |
           response=$(curl -sS -w "\n%{http_code}" -X POST "https://my.lizasem.xyz/api/application.deploy" \
             -H "x-api-key: ${DOKPLOY_API_KEY}" \

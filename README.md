@@ -46,9 +46,16 @@ cd apps/web && pnpm dev
 
 Use `dash.localhost:3000` for the dashboard and `{slug}.localhost:3000` for client hubs locally.
 
-## Deploy
+## First client: CP
 
-Use a **separate** Dokploy app and Supabase project from the public Zali hub. Point DNS:
+Create a project with slug **`cp`** in the dashboard. URLs once live:
+
+| Who | URL |
+|-----|-----|
+| You + Nali (dashboard) | `https://dash.projects.lizasem.com/cp` |
+| CP client hub | `https://cp.projects.lizasem.com` |
+
+If CP was created on `dash.zali.so`, recreate it here after deploy — each domain uses its own database.
 
 - `projects.lizasem.com` → app (marketing / redirect)
 - `dash.projects.lizasem.com` → app (dashboard)
