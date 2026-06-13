@@ -68,16 +68,20 @@ export default async function middleware(req: NextRequest) {
   // Get the pathname of the request (e.g. /, /about, /blog/first-post)
   const path = url.pathname;
 
-  // Get root domain
+  const configuredRoot = process.env.NEXT_PUBLIC_ROOT_DOMAIN!;
+
+  // Get root domain (supports multi-label roots like projects.lizasem.com)
   const rootDomain = hostname.includes('localhost')
     ? hostname.split('.').slice(-1)[0]
+    : hostname === configuredRoot || hostname.endsWith(`.${configuredRoot}`)
+    ? configuredRoot
     : hostname.split('.').length >= 2
     ? `${hostname.split('.').slice(-2).join('.')}`
     : null;
 
   // If the request is for a custom domain, rewrite to project paths
   if (
-    rootDomain !== process.env.NEXT_PUBLIC_ROOT_DOMAIN ||
+    rootDomain !== configuredRoot ||
     process.env.CUSTOM_DOMAIN_WHITELIST?.split(',').includes(hostname)
   ) {
     // Retrieve the project from the database
@@ -113,9 +117,9 @@ export default async function middleware(req: NextRequest) {
 
   // rewrites for dash pages
   if (
-    hostname === `dash.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}` ||
+    hostname === `dash.${configuredRoot}` ||
     (process.env.SUBDOMAIN_HOSTING === 'true' &&
-      hostname === `${process.env.DASHBOARD_SUBDOMAIN}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)
+      hostname === `${process.env.DASHBOARD_SUBDOMAIN}.${configuredRoot}`)
   ) {
     // protect all app pages with authentication except for /login, /signup and /invite/*
     if (!session.data.session && path !== '/login' && path !== '/signup' && !path.startsWith('/invite/')) {
@@ -132,7 +136,7 @@ export default async function middleware(req: NextRequest) {
   }
 
   // rewrite root application to `/home` folder
-  if (hostname === 'localhost:3000' || hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN) {
+  if (hostname === 'localhost:3000' || hostname === configuredRoot) {
     return NextResponse.rewrite(new URL(`/home${path === '/' ? '' : path}`, req.url), {
       headers: {
         'x-pathname': path,
@@ -142,7 +146,7 @@ export default async function middleware(req: NextRequest) {
   }
 
   // rewrite /api to `/api` folder
-  if (hostname === `api.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`) {
+  if (hostname === `api.${configuredRoot}`) {
     return NextResponse.rewrite(new URL(`/api${path}`, req.url), {
       headers: {
         'x-pathname': path,
