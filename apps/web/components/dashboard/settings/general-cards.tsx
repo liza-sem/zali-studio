@@ -373,9 +373,9 @@ export default function GeneralConfigCards({
     }
   }, [domainStatus, fetchDomainData]);
 
-  // Fetch once on mount
+  // Fetch once on mount (only when a custom domain is already set)
   useEffect(() => {
-    if (domainStatus === 'unverified') fetchDomainData();
+    if (domainStatus === 'unverified' && projectConfig?.custom_domain) fetchDomainData();
     // In this case, we don't want to re-run this effect if domainStatus changes as it would cause an infinite loop
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -7,10 +7,13 @@ export function isSlugValid(slug: string) {
   return true;
 }
 
-export function formatRootUrl(subdomain?: string, path?: string) {
-  const protocol = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production' ? 'https' : 'http';
+function appProtocol() {
+  const root = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? '';
+  return root.includes('localhost') ? 'http' : 'https';
+}
 
-  return `${protocol}://${subdomain ? `${subdomain}.` : ''}${process.env.NEXT_PUBLIC_ROOT_DOMAIN}${
+export function formatRootUrl(subdomain?: string, path?: string) {
+  return `${appProtocol()}://${subdomain ? `${subdomain}.` : ''}${process.env.NEXT_PUBLIC_ROOT_DOMAIN}${
     path ? path : ''
   }`;
 }

@@ -16,47 +16,39 @@ export const config = {
   ],
 };
 
+function applySupabaseCookies(target: NextResponse, source: NextResponse) {
+  source.cookies.getAll().forEach((cookie) => {
+    target.cookies.set(cookie);
+  });
+  return target;
+}
+
 export default async function middleware(req: NextRequest) {
-  // Create a Supabase client configured to use cookies
+  let supabaseResponse = NextResponse.next({ request: req });
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return req.cookies.get(name)?.value;
+        getAll() {
+          return req.cookies.getAll();
         },
-        set(name: string, value: string, options: CookieOptions) {
-          req.cookies.set({
-            name,
-            value,
-            ...options,
-          });
-          NextResponse.next({
-            request: {
-              headers: req.headers,
-            },
-          });
-        },
-        remove(name: string, options: CookieOptions) {
-          req.cookies.set({
-            name,
-            value: '',
-            ...options,
-          });
-          NextResponse.next({
-            request: {
-              headers: req.headers,
-            },
-          });
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+          cookiesToSet.forEach(({ name, value }) => req.cookies.set(name, value));
+          supabaseResponse = NextResponse.next({ request: req });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          );
         },
       },
     }
   );
 
   // Refresh session if expired - required for Server Components
-  // https://supabase.com/docs/guides/auth/auth-helpers/nextjs#managing-session-with-middleware
-  const session = await supabase.auth.getSession();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const url = req.nextUrl;
 
@@ -94,24 +86,27 @@ export default async function middleware(req: NextRequest) {
 
     // If the project doesn't exist, return 404
     if (error || !data) {
-      return NextResponse.next();
+      return applySupabaseCookies(NextResponse.next(), supabaseResponse);
     }
 
     // If the project exists, rewrite the request to the project's folder
-    return NextResponse.rewrite(
-      new URL(
-        `/${data?.project?.slug}${path}${
-          req.nextUrl.searchParams ? `?${req.nextUrl.searchParams.toString()}` : ''
-        }`,
-        req.url
+    return applySupabaseCookies(
+      NextResponse.rewrite(
+        new URL(
+          `/${data?.project?.slug}${path}${
+            req.nextUrl.searchParams ? `?${req.nextUrl.searchParams.toString()}` : ''
+          }`,
+          req.url
+        ),
+        {
+          headers: {
+            'x-pathname': path,
+            'x-project': data?.project?.slug,
+            'x-powered-by': 'Projects',
+          },
+        }
       ),
-      {
-        headers: {
-          'x-pathname': path,
-          'x-project': data?.project?.slug,
-          'x-powered-by': 'Projects',
-        },
-      }
+      supabaseResponse
     );
   }
 
@@ -122,53 +117,65 @@ export default async function middleware(req: NextRequest) {
       hostname === `${process.env.DASHBOARD_SUBDOMAIN}.${configuredRoot}`)
   ) {
     // protect all app pages with authentication except for /login, /signup and /invite/*
-    if (!session.data.session && path !== '/login' && path !== '/signup' && !path.startsWith('/invite/')) {
-      return NextResponse.redirect(new URL('/login', req.url));
+    if (!user && path !== '/login' && path !== '/signup' && !path.startsWith('/invite/')) {
+      return applySupabaseCookies(NextResponse.redirect(new URL('/login', req.url)), supabaseResponse);
     }
 
     // rewrite / to /dash
-    return NextResponse.rewrite(new URL(`/dash${path === '/' ? '' : path}`, req.url), {
-      headers: {
-        'x-pathname': path,
-        'x-project': path.split('/')[1],
-      },
-    });
+    return applySupabaseCookies(
+      NextResponse.rewrite(new URL(`/dash${path === '/' ? '' : path}`, req.url), {
+        headers: {
+          'x-pathname': path,
+          'x-project': path.split('/')[1],
+        },
+      }),
+      supabaseResponse
+    );
   }
 
   // rewrite root application to `/home` folder
   if (hostname === 'localhost:3000' || hostname === configuredRoot) {
-    return NextResponse.rewrite(new URL(`/home${path === '/' ? '' : path}`, req.url), {
-      headers: {
-        'x-pathname': path,
-        'x-project': path.split('/')[1],
-      },
-    });
+    return applySupabaseCookies(
+      NextResponse.rewrite(new URL(`/home${path === '/' ? '' : path}`, req.url), {
+        headers: {
+          'x-pathname': path,
+          'x-project': path.split('/')[1],
+        },
+      }),
+      supabaseResponse
+    );
   }
 
   // rewrite /api to `/api` folder
   if (hostname === `api.${configuredRoot}`) {
-    return NextResponse.rewrite(new URL(`/api${path}`, req.url), {
-      headers: {
-        'x-pathname': path,
-        'x-project': path.split('/')[1],
-      },
-    });
+    return applySupabaseCookies(
+      NextResponse.rewrite(new URL(`/api${path}`, req.url), {
+        headers: {
+          'x-pathname': path,
+          'x-project': path.split('/')[1],
+        },
+      }),
+      supabaseResponse
+    );
   }
 
   // rewrite everything else to `/[sub-domain]/[path] dynamic route
-  return NextResponse.rewrite(
-    new URL(
-      `/${hostname.split('.')[0]}${path}${
-        req.nextUrl.searchParams ? `?${req.nextUrl.searchParams.toString()}` : ''
-      }`,
-      req.url
+  return applySupabaseCookies(
+    NextResponse.rewrite(
+      new URL(
+        `/${hostname.split('.')[0]}${path}${
+          req.nextUrl.searchParams ? `?${req.nextUrl.searchParams.toString()}` : ''
+        }`,
+        req.url
+      ),
+      {
+        headers: {
+          'x-pathname': path,
+          'x-project': hostname.split('.')[0],
+          'x-powered-by': 'Projects',
+        },
+      }
     ),
-    {
-      headers: {
-        'x-pathname': path,
-        'x-project': hostname.split('.')[0],
-        'x-powered-by': 'Projects',
-      },
-    }
+    supabaseResponse
   );
 }

@@ -13,6 +13,21 @@ export async function GET(req: Request, context: { params: { slug: string } }) {
     return NextResponse.json({ error: error.message }, { status: error.status });
   }
 
+  if (!data.custom_domain) {
+    return NextResponse.json({ error: 'No custom domain configured' }, { status: 400 });
+  }
+
+  if (!process.env.VERCEL_AUTH_TOKEN || !process.env.VERCEL_PROJECT_ID) {
+    return NextResponse.json(
+      {
+        error:
+          'Custom domain verification via Vercel is not configured on this server. Use your project subdomain instead.',
+        verified: false,
+      },
+      { status: 400 }
+    );
+  }
+
   const [configResponse, domainResponse] = await Promise.all([
     fetch(
       `https://api.vercel.com/v6/domains/${data.custom_domain}/config${
