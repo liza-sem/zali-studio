@@ -11,6 +11,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -36,6 +37,11 @@ jobs:
             NEXT_PUBLIC_ROOT_DOMAIN=${{ vars.NEXT_PUBLIC_ROOT_DOMAIN }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Make GHCR package public for Dokploy pulls
+        run: gh api --method PATCH /user/packages/container/zali-studio -f visibility=public
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Dokploy builds from git on the VPS; CI only publishes the GHCR image.
   # Re-enable this job after GHCR package is public or registry PAT has read:packages.
